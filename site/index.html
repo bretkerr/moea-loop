@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoEA Loop — Recursive Research Orchestrator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --accent: #f5a524;
+            --cream: #f1ead8;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--cream);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        header {
+            margin-bottom: 6rem;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            margin: 0 0 1rem;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-top: 4rem;
+            color: var(--accent);
+        }
+
+        .kicker {
+            font-family: 'DM Mono', monospace;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .deck {
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
+            font-weight: 300;
+            color: rgba(241, 234, 216, 0.8);
+            max-width: 800px;
+        }
+
+        .pipeline {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.03);
+            padding: 2rem;
+            border-left: 2px solid var(--accent);
+            margin: 3rem 0;
+            line-height: 2;
+        }
+
+        .pipeline span {
+            color: var(--accent);
+        }
+
+        .section {
+            margin-bottom: 5rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            max-width: 700px;
+            color: rgba(241, 234, 216, 0.7);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 3rem 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            font-family: 'DM Mono', monospace;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            font-weight: normal;
+        }
+
+        td:first-child {
+            font-family: 'DM Mono', monospace;
+            color: var(--cream);
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 4rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(241, 234, 216, 0.2);
+            color: var(--cream);
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .btn.primary:hover {
+            background: transparent;
+            color: var(--accent);
+        }
+
+        footer {
+            margin-top: 8rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            color: rgba(241, 234, 216, 0.4);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 3rem 1.25rem;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                margin-bottom: 1rem;
+                padding-bottom: 1rem;
+            }
+            td {
+                border: none;
+                position: relative;
+                padding: 0.5rem 0;
+            }
+            td:before {
+                position: absolute;
+                top: 0.5rem;
+                left: 0;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-family: 'DM Mono', monospace;
+                color: var(--accent);
+                font-size: 0.75rem;
+                text-transform: uppercase;
+            }
+            td:nth-of-type(1):before { content: "Primitive"; }
+            td:nth-of-type(2):before { content: "Role"; }
+            td:nth-of-type(3):before { content: "Lens"; }
+            td {
+                padding-left: 50%;
+            }
+            .buttons {
+                flex-direction: column;
+            }
+            .btn {
+                text-align: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="kicker">ACRA Insight</span>
+            <h1>MoEA Loop</h1>
+            <div class="deck">
+                A typed rewrite system that drives two research skills into a self-extending, auditable research tree.
+            </div>
+        </header>
+
+        <div class="section">
+            <span class="kicker">The Pipeline</span>
+            <div class="pipeline">
+                brief <span>&rarr;</span> Stage 1 XML <span>&rarr;</span> anchored deep research <span>&rarr;</span> Stage 2 STT (4 deliverables) <span>&rarr;</span> typed fork (1 deepen + 1 diverge) <span>&rarr;</span> recurse
+            </div>
+        </div>
+
+        <div class="section">
+            <span class="kicker">The Hard Problem, Solved</span>
+            <h2>Complementary By Construction</h2>
+            <p>Forking is a typed function of the anchor set, not a menu pick. The selection returns one best-deepen and one best-diverge, guaranteeing different directions.</p>
+            <p>A novelty ledger terminates saturated branches so recursion cannot collapse into restatement or expensive echo chambers. Scale to as many loops as you have tokens.</p>
+        </div>
+
+        <div class="section">
+            <span class="kicker">Language</span>
+            <h2>Fork Primitives</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Primitive</th>
+                        <th>Role</th>
+                        <th>Lens</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ANTITHESIS</td>
+                        <td>deepen</td>
+                        <td>Feynman steelman-the-objection</td>
+                    </tr>
+                    <tr>
+                        <td>DEBATE</td>
+                        <td>deepen</td>
+                        <td>AI-safety-via-debate / Oxford two-sided</td>
+                    </tr>
+                    <tr>
+                        <td>DEPTH</td>
+                        <td>deepen</td>
+                        <td>drill one named open question to the studs</td>
+                    </tr>
+                    <tr>
+                        <td>HOLOGRAPHIC</td>
+                        <td>diverge</td>
+                        <td>Maldacena boundary/bulk reframe</td>
+                    </tr>
+                    <tr>
+                        <td>ANALOGICAL</td>
+                        <td>diverge</td>
+                        <td>cross-domain isomorphism transplant</td>
+                    </tr>
+                    <tr>
+                        <td>VERTICAL</td>
+                        <td>diverge</td>
+                        <td>applied instantiation (sector / GTM / product)</td>
+                    </tr>
+                    <tr>
+                        <td>POWER</td>
+                        <td>diverge</td>
+                        <td>coalition / incentive map</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="buttons">
+            <a href="#" class="btn primary" id="github-link">GitHub Repo</a>
+            <a href="https://contextjamming.com" class="btn">contextjamming.com</a>
+            <a href="https://twitter.com/BretKerr" class="btn">@BretKerr</a>
+            <span class="btn">Apache-2.0</span>
+        </div>
+
+        <footer>
+            <span>&copy; 2026 ACRA Insight LLC</span>
+            <span>v0.2</span>
+        </footer>
+    </div>
+</body>
+</html>
